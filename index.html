@@ -1,0 +1,107 @@
+<html>
+  <body>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <style>
+        
+        .flowchart{
+            width: auto;
+            height: 900px;
+            margin: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 0.4rem solid #332200;
+            background-color: #efefef;
+            background-image: linear-gradient(#ffffff .1rem, transparent .1rem), linear-gradient(90deg, #ffffff .1rem, transparent .1rem);
+            background-size: 30px 30px;
+            background-position: -0.1rem -0.1rem;
+            
+        }
+
+        .flowchart svg{
+            display: block;
+            margin: auto;
+            width: 100%;
+            height: 100%;
+            max-width: 100% !important;
+        }
+
+    </style>
+
+    <div class="mermaid flowchart border">
+        flowchart LR
+        TESTE01
+        TESTE02
+        TESTE03
+        TESTE04
+        TESTE05
+        TESTE06
+        TESTE07
+        TESTE01 --> TESTE02
+        TESTE02 --> TESTE03
+        TESTE03 --> TESTE04
+        TESTE03 --> TESTE05
+        TESTE03 --> TESTE06
+        TESTE06 --> TESTE07
+    </div>
+
+
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="svg-pan-zoom.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+
+  <script>
+    // Don't use window.onLoad like this in production, because it can only listen to one function.
+    window.onload = function() {
+        var beforePan
+
+        beforePan = function(oldPan, newPan){
+            var stopHorizontal = false
+            , stopVertical = false
+            , gutterWidth = 100
+            , gutterHeight = 100
+                // Computed variables
+            , sizes = this.getSizes()
+            , leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth
+            , rightLimit = sizes.width - gutterWidth - (sizes.viewBox.x * sizes.realZoom)
+            , topLimit = -((sizes.viewBox.y + sizes.viewBox.height) * sizes.realZoom) + gutterHeight
+            , bottomLimit = sizes.height - gutterHeight - (sizes.viewBox.y * sizes.realZoom)
+
+            customPan = {}
+            customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
+            customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
+
+            return customPan
+        }
+
+        // Expose to window namespace for testing purposes
+        window.panZoom = svgPanZoom('svg', {
+            zoomEnabled: true
+        , controlIconsEnabled: true
+        , fit: 1
+        , center: 1
+        , beforePan: beforePan
+        , panEnabled: true
+        , controlIconsEnabled: false
+        , dblClickZoomEnabled: true
+        , mouseWheelZoomEnabled: true
+        , preventMouseEventsDefault: true
+        , zoomScaleSensitivity: 0.4
+        , minZoom: -1
+        , maxZoom: 3000
+        , fit: true
+        , contain: false
+        , center: true
+        , refreshRate: 'auto'
+        });
+
+      // panZoom.setBeforePan(beforePan)
+    };
+    </script>
+
+</html>
