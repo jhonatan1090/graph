@@ -44,23 +44,24 @@
             opacity: 0.7;
         }
 
+        a:link, a:active, a:visited, a:hover{color:inherit; text-decoration: none;}
+
     </style>
 
-    <div class="mermaid flowchart border">
-        flowchart LR
-        TESTE01
-        TESTE02
-        TESTE03
-        TESTE04
-        TESTE05
-        TESTE06
-        TESTE07
-        TESTE01 --> TESTE02
-        TESTE02 --> TESTE03
-        TESTE03 --> TESTE04
-        TESTE03 --> TESTE05
-        TESTE03 --> TESTE06
-        TESTE06 --> TESTE07
+    <div class="mermaid flowchart border" id="container">
+    TESTE01
+    TESTE02
+    TESTE03
+    TESTE04
+    TESTE05
+    TESTE06
+    TESTE07
+    TESTE01 --> TESTE02
+    TESTE02 --> TESTE03
+    TESTE03 --> TESTE04
+    TESTE03 --> TESTE05
+    TESTE03 --> TESTE06
+    TESTE06 --> TESTE07
     </div>
 
     <div class="btn-group btn-group-toggle menu_chart" data-toggle="buttons">
@@ -68,25 +69,48 @@
           <input type="radio" name="optionLR" id="optionLR" autocomplete="off" onclick="clickMe(this)"> LR
         </label>
         <label class="btn btn-secondary">
+          <input type="radio" name="optionRL" id="optionRL" autocomplete="off" onclick="clickMe(this)"> RL
+        </label>
+        <label class="btn btn-secondary">
           <input type="radio" name="optionTB" id="optionTB" autocomplete="off" onclick="clickMe(this)"> TB
         </label>
         <label class="btn btn-secondary">
-          <input type="radio" name="optionSave" id="optionSave" autocomplete="off" onclick="clickMe(this)"> Salvar
+          <input type="radio" name="optionBT" id="optionBT" autocomplete="off" onclick="clickMe(this)"> BT
+        </label>
+        <label class="btn btn-secondary">
+          <a type="radio" name="optionSave" id="optionSave" autocomplete="off" onclick="clickMe(this)"> Salvar</a>
         </label>
     </div>
 
+    <div id="hidden" style="display: none;"></div> 
+
   </body>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <script src="svg-pan-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-base64@3.5.2/base64.min.js"></script>
   <script>
 
     /**
      * MERMAID CONFIG
     **/
     mermaid.initialize({
-        startOnLoad:true
+        startOnLoad:true,
+        logLevel: 4
     });
+
+    (function(){
+        var graphDefinition = "flowchart LR".concat($("#container").text());
+        $("#hidden").html($("#container").text());
+        var element = document.querySelector("#container");
+        var insertSvg = function(svgCode, bindFunctions){
+            // Put the input in did #container
+            element.innerHTML = graphDefinition;
+        };
+        var graph = mermaid.render('graphSVG', graphDefinition, insertSvg);
+    })();
+
 
     /**
      * OnClick Function LR, TB and Save
@@ -94,11 +118,80 @@
     function clickMe(element) {
 
         if(element.name == 'optionLR'){
-            console.log(mermaid);
+            zoom.destroy();
+            var graphDefinition = "flowchart LR".concat($("#hidden").text());
 
+            var needsUniqueId = "render" + (Math.floor(Math.random() * 10000)).toString(); 
+            mermaid.mermaidAPI.render(needsUniqueId, graphDefinition, mermaidApiRenderCallback);
+
+            function mermaidApiRenderCallback(graph) {
+                $("#container").html(graph);
+            }
+
+            $(".menu_chart label").removeClass("active");
+            $("#optionLR").parent().addClass("active");
+
+            getZoom();
+                        
         }else if(element.name == 'optionTB'){
+            zoom.destroy();
+            var graphDefinition = "flowchart TB".concat($("#hidden").text());
+
+            var needsUniqueId = "render" + (Math.floor(Math.random() * 10000)).toString(); 
+            mermaid.mermaidAPI.render(needsUniqueId, graphDefinition, mermaidApiRenderCallback);
+
+            function mermaidApiRenderCallback(graph) {
+                $("#container").html(graph);
+            }
+
+            $(".menu_chart label").removeClass("active");
+            $("#optionTB").parent().addClass("active");
+
+            getZoom();
+
+        }else if(element.name == 'optionBT'){
+            zoom.destroy();
+            var graphDefinition = "flowchart BT".concat($("#hidden").text());
+
+            var needsUniqueId = "render" + (Math.floor(Math.random() * 10000)).toString(); 
+            mermaid.mermaidAPI.render(needsUniqueId, graphDefinition, mermaidApiRenderCallback);
+
+            function mermaidApiRenderCallback(graph) {
+                $("#container").html(graph);
+            }
+
+            $(".menu_chart label").removeClass("active");
+            $("#optionBT").parent().addClass("active");
+
+            getZoom();
+
+        }else if(element.name == 'optionRL'){
+            zoom.destroy();
+            var graphDefinition = "flowchart RL".concat($("#hidden").text());
+
+            var needsUniqueId = "render" + (Math.floor(Math.random() * 10000)).toString(); 
+            mermaid.mermaidAPI.render(needsUniqueId, graphDefinition, mermaidApiRenderCallback);
+
+            function mermaidApiRenderCallback(graph) {
+                $("#container").html(graph);
+            }
+
+            $(".menu_chart label").removeClass("active");
+            $("#optionRL").parent().addClass("active");
+
+            getZoom();
 
         }else if(element.name == 'optionSave'){
+
+            const container = document.getElementById("container");
+            clone = container.cloneNode(true);
+            clone.getElementsByClassName('svg-pan-zoom_viewport')[0].removeAttribute("transform");
+            clone.getElementsByClassName('svg-pan-zoom_viewport')[0].removeAttribute("style");
+            event.target.href = `data:image/svg+xml;base64,${Base64.encode(
+                clone.innerHTML
+            )}`;
+            event.target.download = `mermaid-diagram.svg`;
+            delete clone;
 
         }
 
@@ -107,31 +200,30 @@
     /**
      * ZOOM CONFIG
     **/
-    // Don't use window.onLoad like this in production, because it can only listen to one function.
-    window.onload = function() {
-        var beforePan
+    var beforePan;
+    var zoom;
 
-        beforePan = function(oldPan, newPan){
-            var stopHorizontal = false
-            , stopVertical = false
-            , gutterWidth = 100
-            , gutterHeight = 100
-                // Computed variables
-            , sizes = this.getSizes()
-            , leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth
-            , rightLimit = sizes.width - gutterWidth - (sizes.viewBox.x * sizes.realZoom)
-            , topLimit = -((sizes.viewBox.y + sizes.viewBox.height) * sizes.realZoom) + gutterHeight
-            , bottomLimit = sizes.height - gutterHeight - (sizes.viewBox.y * sizes.realZoom)
+    beforePan = function(oldPan, newPan){
+        var stopHorizontal = false
+        , stopVertical = false
+        , gutterWidth = 100
+        , gutterHeight = 100
+            // Computed variables
+        , sizes = this.getSizes()
+        , leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth
+        , rightLimit = sizes.width - gutterWidth - (sizes.viewBox.x * sizes.realZoom)
+        , topLimit = -((sizes.viewBox.y + sizes.viewBox.height) * sizes.realZoom) + gutterHeight
+        , bottomLimit = sizes.height - gutterHeight - (sizes.viewBox.y * sizes.realZoom)
 
-            customPan = {}
-            customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
-            customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
+        customPan = {}
+        customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
+        customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
 
-            return customPan
-        }
+        return customPan
+    }
 
-        // Expose to window namespace for testing purposes
-        window.panZoom = svgPanZoom('svg', {
+    function getZoom(){
+        zoom = svgPanZoom('svg', {
             zoomEnabled: true
             , controlIconsEnabled: true
             , fit: 1
@@ -150,8 +242,12 @@
             , center: true
             , refreshRate: 'auto'
         });
+    }
 
-      // panZoom.setBeforePan(beforePan)
+    window.onload = function() {
+
+        getZoom();
+
     };
     </script>
 
